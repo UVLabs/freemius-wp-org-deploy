@@ -1,0 +1,47 @@
+name: Upload Free Plugin to WP.org
+on:
+  workflow_run:
+    workflows: [Create Github Release]
+    types:
+      - completed
+jobs:
+  download-freemius:
+    
+    name: Download Free Plugin From Freemius
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    env: 
+      FS_USER_ID: ${{ secrets.FS_USER_ID }}
+      FS_PLUGIN_ID: ${{ secrets.FS_PLUGIN_ID }}
+      FS_PUBLIC_KEY: ${{ secrets.FS_PUBLIC_KEY }}
+      FS_SECRET_KEY: ${{ secrets.FS_SECRET_KEY }}
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.1'
+    
+    - name: Clone Freemius PHP SDK Repo
+      uses: actions/checkout@v3
+      with:
+        repository: Freemius/freemius-php-sdk
+        path: ./bin/freemius/freemius-sdk
+        ref: master
+    
+    - name: Fetch Free Plugin From API
+      id: fetch-free-plugin
+      run: |
+        cd bin/freemius
+        php download-free-plugin.php
+        echo "version_number=$(php get-latest-version-number.php true)" >> $GITHUB_OUTPUT
+
+    - name: Deploy Free Plugin to WP.org
+      uses: 10up/action-wordpress-plugin-deploy@stable
+      env:
+        SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+        SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+        SLUG: ${{ secrets.SLUG }}
+        BUILD_DIR: './bin/freemius/plugin-free/'
+        VERSION: ${{ steps.fetch-free-plugin.outputs.version_number }}
+

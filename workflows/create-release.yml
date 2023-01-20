@@ -1,0 +1,62 @@
+name: Create Github Release
+on:
+  push:
+    branches:
+      - main
+jobs:
+  create-release:
+
+    runs-on: ubuntu-latest
+    if: contains( github.event.head_commit.message, 'release-me' )
+    env: 
+      FS_USER_ID: ${{ secrets.FS_USER_ID }}
+      FS_PLUGIN_ID: ${{ secrets.FS_PLUGIN_ID }}
+      FS_PUBLIC_KEY: ${{ secrets.FS_PUBLIC_KEY }}
+      FS_SECRET_KEY: ${{ secrets.FS_SECRET_KEY }}
+    steps:
+     - name: Checkout Code
+       uses: actions/checkout@v3
+    
+     - name: Setup PHP
+       uses: shivammathur/setup-php@v2
+       with: 
+          php-version: '8.1'
+    
+     - name: Clone Freemius PHP SDK Repo
+       uses: actions/checkout@v3
+       with:
+        repository: Freemius/freemius-php-sdk
+        path: ./bin/freemius/freemius-sdk
+        ref: master
+    
+     - name: Create Release Notes File
+       env: 
+        COMMITTEXT: "${{ github.event.head_commit.message }}"
+       run: |
+          php ./bin/freemius/create-release-notes-file.php
+    
+     - name: Set Tag Output
+       id: set-tag
+       run:  |
+        php ./bin/freemius/get-latest-version-number.php
+        echo "tag_name=$(php ./bin/freemius/get-latest-version-number.php)" >> $GITHUB_OUTPUT
+             
+     - name: Create Tag
+       uses: actions/github-script@v3
+       env:
+          TAG: ${{ steps.set-tag.outputs.tag_name }}
+       with:
+          github-token: ${{ github.token }}
+          script: |
+            github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "refs/tags/${{ steps.set-tag.outputs.tag_name }}",
+              sha: context.sha
+            })
+     - name: Create release
+       uses: ncipollo/release-action@v1
+       with:
+        tag: ${{ steps.set-tag.outputs.tag_name }}
+        bodyFile: './release_notes.txt'
+        token: ${{ secrets.GITHUB_TOKEN }}
