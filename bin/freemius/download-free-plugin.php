@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname( __FILE__ ) . './setup-freemius-api.php';
+require_once dirname( __FILE__ ) . '/setup-freemius-api.php';
 
 /**
  * Download free plugin from Freemius API.
