@@ -14,6 +14,7 @@ $commit_message_body_lines = explode( "\n", $commit_message_body );
 $release_notes = '';
 
 foreach ( $commit_message_body_lines as $commit_message_body_line ) {
+	$commit_message_body_line = trim( $commit_message_body_line, '* ' );
 	// Format Markdown
 	$release_notes .= '* ' . $commit_message_body_line . PHP_EOL;
 }

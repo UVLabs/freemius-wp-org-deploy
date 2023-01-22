@@ -123,7 +123,7 @@ class Download_Free_Plugin extends Setup_Freemius_API {
 		print_r( $verbose );
 
 		// Uncomment below to see the files and folders that would be sent to SVN without actually sending them.
-		// exit(1)
+		// exit(1);
 	}
 }
 new Download_Free_Plugin();
