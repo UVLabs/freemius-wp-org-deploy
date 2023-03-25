@@ -18,7 +18,7 @@ If your workflow is similar to the one detailed below, then this repo might prov
 
 - You have a private github repository where you keep your codebase. 
 - You have a local dist script that wraps up and zips up your plugin files which you then upload to Freemius. The `sample-dist.sh` inside the bin folder is an example of such a script.
-- You then upload the zip file to Freemius.com deployment (manually) and download a copy of the free/pro versions to do a smoke test.
+- You then upload the zip file to Freemius.com deployment (manually) and download a copy of the free/pro versions to do a smoke test (you should, Freemius has it's own PHP parser which it uses to analyze and make changes to your code so...you never know).
 - Once you're satisfied that everything is fine, you turn the deployment to "released" inside freemius.
 - You merge the `development` branch on your private repo into the `main`/`master` (production) branch
 - You cross your fingers that your latest release doesn't break user's websites.
