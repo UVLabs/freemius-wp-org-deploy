@@ -8,7 +8,7 @@ Before using this workflow on a new Github respository, you need to give workflo
 
 To do that go to the respository settings, and set the "Workflow permissions" to "Read and write permissions"
 
-[Worflow Permissions setting](./screenshots/workflow-permissions.png). 
+![Worflow Permissions setting](./screenshots/workflow-permissions.png). 
 
 # Applicable workflows
 
